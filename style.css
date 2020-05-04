@@ -1,13 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 body {
     background: #BBBBBB;
     font-size: 24px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
 }
 
 #main {
     margin: 25px auto;
     width: 80%;
-    min-width: 715px;
+    min-width: 800px;
 }
 
 #buttons {
@@ -17,9 +18,19 @@ body {
 }
 
 #buttons button {
-    width: 150px;
-    font-size: 36px;
+    width: 200px;
+    font-size: 38px;
     border-radius: 10px;
+}
+
+#yes,
+#counter {
+    background: #669900;
+}
+
+#no,
+#warnings {
+    background: #CC0033;
 }
 
 #informationBlock {
@@ -33,18 +44,8 @@ body {
 }
 
 #informationBlock div {
-    max-width: 265px;
-    min-width: 100px;
     border-radius: 10px;
     padding: 5px;
-}
-
-#warnings {
-    background: #CC0033;
-}
-
-#counter {
-    background: #669900;
 }
 
 #timer {
@@ -66,4 +67,8 @@ body {
     background: #FFCC33;
     border-radius: 10px;
     padding: 7px;
+}
+
+* {
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
 }
