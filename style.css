@@ -7,11 +7,11 @@ body {
 
 #main {
     margin: 25px auto;
-    width: 80%;
+    width: 90%;
     min-width: 800px;
 }
 
-#buttons {
+#main>div {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -33,12 +33,6 @@ body {
     background: #CC0033;
 }
 
-#informationBlock {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
-
 #informationBlock span {
     font-weight: bold;
 }
@@ -52,17 +46,29 @@ body {
     background: #FFCC33;
 }
 
+#noteBlock {
+    overflow: auto;
+    background: #222222;
+    font-size: 20px;
+    height: 495px;
+    width: 40%;
+    border-radius: 10px;
+    margin: 20px auto;
+    margin-left: 10px;
+}
+
 #mainBlock {
     overflow: auto;
     background: #222222;
     font-size: 20px;
-    height: 500px;
-    width: 100%;
+    height: 495px;
+    width: 60%;
     border-radius: 10px;
     margin: 20px auto;
 }
 
-#mainBlock div {
+#mainBlock div,
+#noteBlock div {
     margin: 15px;
     background: #FFCC33;
     border-radius: 10px;
