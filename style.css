@@ -17,6 +17,10 @@ body {
     justify-content: space-around;
 }
 
+#buttons {
+    width: 60%;
+}
+
 #buttons button {
     width: 200px;
     font-size: 38px;
