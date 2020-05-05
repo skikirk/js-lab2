@@ -1,22 +1,5 @@
-/*
-Фамилию, Имя, Город и Страну Проживания, 
-Дату Въезда, Дату Выезда, Цель Визита
+"use strict";
 
-Есть правила, по которым можно пропускать человека:
-не должно быть ошибок в городе и стране. 
-Город должен быть из нужной страны, все слова должны быть написаны 
-без ошибок. может быть всего пять целей визита: 
-дипломатия, работа, туризм, посещение родственников и шоппинг.
-время пребывания (расстояние между датой въезда и датой выезда) 
-для каждой цели свое
-дипломатия: до 10 дней
-работа: до 15 дней
-туризм: до 3 дней
-посещение родственников: до 5 дней
-шоппинг: до 1 дня
-дата въезда должна быть верной 
-
-*/
 let countries = ['Россия', 'Норвегия', 'Великобритания', 'Швеция', 'Украина', 'Китай', 'Япония', 'США', 'Канада', 'Испания', 'Германия', 'Польша', 'Италия', 'Франция'];
 let cities = ['Москва', 'Осло', 'Лондон', 'Стокгольм', 'Киев', 'Пекин', 'Токио', 'Вашингтон', 'Оттава', 'Мадрид', 'Берлин', 'Варшава', 'Рим', 'Париж']
 let menNames = [
@@ -68,7 +51,9 @@ let surnames = [
     ['Габен', 'Дюбуа', 'Жаккар', 'Ламбер', 'Мерлен', 'Паскаль'] //Франция
 ];
 
-let purposes = new Map([
+let rightPurposes = ['дипломатия', 'работа', 'туризм', 'посещение родственников', 'шоппинг'];
+
+let mapPurposes = new Map([
     ['дипломатия', 10],
     ['работа', 15],
     ['туризм', 3],
@@ -76,23 +61,31 @@ let purposes = new Map([
     ['шоппинг', 1]
 ]);
 
+let wrongPurposes = ['учёба', 'политическое убежище', 'спорт', 'культура', 'посещение друзей', 'лечение'];
+
 let russsianLetters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
 
 let chosenDate = new Date();
 
 function generateName(num) {
     let s = '';
-    let isMan = Math.random() < 0.5;
-    s += isMan ? menNames[num] : womenNames[num];
-    s += ' ' + surnames[num];
-    if (num == 0)
+    let isMan = Boolean(randomInt(2));
+    s += isMan ? menNames[num][randomInt(menNames[num].length)] : womenNames[num][randomInt(womenNames[num].length)];
+    s += ' ' + surnames[num][randomInt(surnames[num].length)];
+    if (num == 0 && !isMan)
         s += 'а';
+    return s;
+}
+
+//возвращает случайное целое число в диапазоне [min,max-1]
+function randomInt(max, min = 0) {
+    return Math.floor(min + Math.random() * (max - min));
 }
 
 //меняет случайную букву в слове
 function changeWord(wrd) {
     let c = russsianLetters[Math.floor(Math.random() * (russsianLetters.length))];
-    let i = Math.floor(Math.random() * (wrd.length));
+    let i = randomInt(wrd.length);
     if (i == 0) {
         c = c.toUpperCase();
     }
@@ -103,11 +96,12 @@ function generateCouple(isCorrect, num) {
     let country = countries[num];
     let city = cities[num];
     if (!isCorrect) {
-        if (Math.random() < 0.6) { //true => меняем город, false => страну
-            if (Math.random() < 0.5) { //берем неправильный город
-                do {
-                    let newNum = Math.floor(Math.random() * (countries.length));
-                } while (newNum == num);
+        if (randomInt(2)) { //true => меняем город, false => страну
+            if (randomInt(2)) { //берем неправильный город
+                let newNum = randomInt(cities.length);
+                while (newNum == num) {
+                    newNum = randomInt(cities.length);
+                }
                 city = cities[newNum];
             } else { //"ошибаемся" в городе
                 city = changeWord(city);
@@ -117,6 +111,44 @@ function generateCouple(isCorrect, num) {
         }
     }
     return [country, city];
+}
+
+function generatePurpose(isCorrect) {
+    if (isCorrect) {
+        let num = randomInt(rightPurposes.length)
+        return [rightPurposes[num], mapPurposes.get(rightPurposes[num])]
+    } else {
+        if (randomInt(2)) { //берем неправильное количество дней
+            let num = randomInt(rightPurposes.length);
+            return [rightPurposes[num], randomInt(25, mapPurposes.get(rightPurposes[num]) + 1)];
+        } else { //берем неправильную цель
+            let num = randomInt(wrongPurposes.length);
+            return [wrongPurposes[num], randomInt(25)];
+        }
+    }
+}
+
+function generateInDate(chosenDate) {
+    let radius = randomInt(6, 1);
+    let tempDate = new Date(chosenDate);
+    let day = tempDate.getDate();
+    if (randomInt(2)) {
+        tempDate.setDate(day - radius);
+    } else {
+        tempDate.setDate(day + radius);
+    }
+    return tempDate;
+}
+
+function generateOutDate(inDate, between, isCorrect, purpose) {
+    let tempDate = new Date(inDate);
+    let day = tempDate.getDate();
+    if (isCorrect) {
+        tempDate.setDate(day + randomInt(between + 1, 1))
+    } else {
+        tempDate.setDate(day + between)
+    }
+    return tempDate;
 }
 
 class Person {
@@ -130,11 +162,16 @@ class Person {
     outDate
     purpose
     */
-    constructor(isCorrect) {
+    constructor(isCorrect = true) {
         this.correct = isCorrect;
+        let broken = randomInt(3);
         let c = Math.floor(Math.random() * (countries.length));
         this.name = generateName(c);
-        [this.country, this.city] = generateCouple(isCorrect, c);
+        [this.country, this.city] = generateCouple(!(broken == 0), c);
+        let betweenTime;
+        [this.purpose, betweenTime] = generatePurpose(!(broken == 1));
+        this.inDate = !(broken == 2) ? new Date(chosenDate) : generateInDate(chosenDate);
+        this.outDate = generateOutDate(this.inDate, betweenTime, !(broken == 1), this.purpose);
     }
 }
 
