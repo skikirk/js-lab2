@@ -12,10 +12,19 @@ body {
 }
 
 #main>div,
-#foot>div {
+#foot>div,
+#informationBlock>div {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+}
+
+#info {
+    width: 60%;
+}
+
+#timer {
+    width: 40%;
 }
 
 #buttons {
@@ -47,7 +56,7 @@ body {
     font-weight: bold;
 }
 
-#informationBlock div,
+#informationBlock>div>div,
 #date>div {
     border-radius: 10px;
     padding: 5px;
@@ -58,7 +67,7 @@ body {
     line-height: 38px;
 }
 
-#timer,
+#timer>div,
 #date>div {
     background: #FFCC33;
 }
