@@ -1,56 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 body {
     background: #BBBBBB;
-    font-size: 15px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
+}
+
+#main {
+    margin: 25px auto;
+    width: 90%;
+    min-width: 800px;
+}
+
+#main>div,
+#foot>div,
+#informationBlock>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#info {
+    width: 60%;
+}
+
+#timer {
+    width: 40%;
+}
+
+#buttons {
+    width: 60%;
+}
+
+#date {
+    width: 40%
 }
 
 #buttons button {
-    width: 100px;
-    font-size: 20px;
-    margin-left: 100px;
+    width: 200px;
+    font-size: 38px;
     border-radius: 10px;
 }
 
-#informationBlock {
-    margin-bottom: 10px;
-}
-
-#informationBlock span {
-    font-weight: bold;
-}
-
-#informationBlock div {
-    display: inline;
-    margin-right: 13px;
-    border-radius: 10px;
-    padding: 5px;
-}
-
-#warnings {
-    background: #CC0033;
-}
-
+#yes,
 #counter {
     background: #669900;
 }
 
-#timer {
+#no,
+#warnings {
+    background: #CC0033;
+}
+
+#informationBlock span,
+#date span {
+    font-weight: bold;
+}
+
+#informationBlock>div>div,
+#date>div {
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#date>div {
+    height: 38px;
+    line-height: 38px;
+}
+
+#timer>div,
+#date>div {
     background: #FFCC33;
+}
+
+#noteBlock {
+    overflow: auto;
+    background: #222222;
+    font-size: 20px;
+    height: 495px;
+    width: 40%;
+    border-radius: 10px;
+    margin: 20px auto;
+    margin-left: 10px;
 }
 
 #mainBlock {
     overflow: auto;
     background: #222222;
-    height: 200px;
-    width: 490px;
+    font-size: 20px;
+    height: 495px;
+    width: 60%;
     border-radius: 10px;
-    margin-bottom: 10px;
-    //border: 2px solid #000000;
+    margin: 20px auto;
 }
 
-#mainBlock div {
-    margin: 10px;
+#mainBlock div,
+#noteBlock div {
+    margin: 15px;
     background: #FFCC33;
     border-radius: 10px;
-    padding: 5px;
+    padding: 7px;
+}
+
+* {
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
 }
