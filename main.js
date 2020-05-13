@@ -26,7 +26,7 @@ let womenNames = [
     ['Олеся', 'Марина', 'Оксана', 'Тамара', 'Юлия', 'Снежана'], //Украина
     ['Кианг', 'Ниу', 'Ши', 'Руолан', 'Джу', 'Хуан'], //Китай
     ['Юки', 'Кими', 'Мидори', 'Хэруки', 'Нобуко', 'Мичи'], //Япония
-    ['Клер', 'Шаррон', 'Рэйчел', 'Тифани', 'Дженифер', 'Дженнис'], //США
+    ['Клер', 'Шаррон', 'Рэйчел', 'Тифани', 'Дженнифер', 'Дженнис'], //США
     ['Эмма', 'Оливия', 'Хлоя', 'Беатрис', 'Сара', 'Меган'], //Канада
     ['Карла', 'Джуана', 'Тереса', 'Синобия', 'Бенита', 'Эсмеральда'], //Испания
     ['Эмилия', 'Ханна', 'Грета', 'Герда', 'Луиза', 'Фрида'], //Германия
@@ -86,6 +86,10 @@ function randomInt(max, min = 0) {
 function changeWord(wrd) {
     let c = russsianLetters[Math.floor(Math.random() * (russsianLetters.length))];
     let i = randomInt(wrd.length);
+    while (wrd[i] == c) {
+        c = russsianLetters[Math.floor(Math.random() * (russsianLetters.length))];
+        i = randomInt(wrd.length);
+    }
     if (i == 0) {
         c = c.toUpperCase();
     }
@@ -151,6 +155,19 @@ function generateOutDate(inDate, between, isCorrect, purpose) {
     return tempDate;
 }
 
+
+//добавляет ноль спереди если в числе меньше 2 цифр
+function numToStr(num) {
+    if (num < 10) {
+        return '0' + String(num);
+    }
+    return String(num);
+}
+
+function dateToString(date) {
+    return (numToStr(date.getDate()) + '.' + numToStr(date.getMonth() + 1) + '.' + date.getFullYear())
+}
+
 class Person {
     /*
     correct
@@ -164,32 +181,194 @@ class Person {
     */
     constructor(isCorrect = true) {
         this.correct = isCorrect;
-        let broken = randomInt(3);
+        let broken = isCorrect ? -1 : randomInt(3);
         let c = Math.floor(Math.random() * (countries.length));
-        this.name = generateName(c);
-        [this.country, this.city] = generateCouple(!(broken == 0), c);
+        this._name = generateName(c);
+        [this._country, this._city] = generateCouple(!(broken == 0), c);
         let betweenTime;
-        [this.purpose, betweenTime] = generatePurpose(!(broken == 1));
-        this.inDate = !(broken == 2) ? new Date(chosenDate) : generateInDate(chosenDate);
-        this.outDate = generateOutDate(this.inDate, betweenTime, !(broken == 1), this.purpose);
+        [this._purpose, betweenTime] = generatePurpose(!(broken == 1));
+        this._inDate = !(broken == 2) ? new Date(chosenDate) : generateInDate(chosenDate);
+        this._outDate = generateOutDate(this._inDate, betweenTime, !(broken == 1), this._purpose);
+    }
+
+    getName = () => '<i>' + this._name + '</i>';
+    getCountry = () => 'Страна: ' + '<i>' + this._country + '</i>';
+    getCity = () => 'Город: ' + '<i>' + this._city + '</i>';
+    getPurpose = () => 'Цель визита: ' + '<i>' + this._purpose + '</i>';
+    getDate = () => 'Даты визита: ' + '<i>' + dateToString(this._inDate) + ' – ' + dateToString(this._outDate) + '</i>';
+}
+
+const red = '#CC0033',
+    green = '#669900';
+const maxTime = 10,
+    maxCounter = 30,
+    maxWarnings = 3;
+let timerID;
+let time = maxTime;
+let counter = 0;
+let warnings = 0;
+let main = document.getElementById('mainBlock');
+let curDIV;
+let p;
+let enable = false; //доделать
+
+document.querySelector('#date span').innerHTML = dateToString(chosenDate);
+
+class Buttons {
+    constructor(elem) {
+        this._elem = elem;
+        elem.onclick = this.onClick.bind(this);
+    }
+
+    yes() {
+        if (p) {
+            clearTimeout(timerID);
+            if (p.correct) {
+                document.querySelector('#counter span').innerHTML = ++counter;
+                curDIV.style.background = green;
+                if (counter < maxCounter) {
+                    time = maxTime;
+                    timer();
+                } else {
+                    alert('Вы выиграли');
+                    if (confirm('Сыграть ещё раз?')) {
+                        let elements = document.querySelectorAll('#mainBlock div');
+                        for (let elem of elements) {
+                            elem.remove();
+                        }
+                        warnings = 0;
+                        counter = 0;
+                        document.querySelector('#warnings span').innerHTML = warnings;
+                        document.querySelector('#counter span').innerHTML = counter;
+                        time = maxTime;
+                        timer();
+                    }
+                }
+            } else {
+                document.querySelector('#warnings span').innerHTML = ++warnings;
+                curDIV.style.background = red;
+                if (warnings < maxWarnings) {
+                    time = maxTime;
+                    timer();
+                } else {
+                    alert('Вы проиграли');
+                    if (confirm('Сыграть ещё раз?')) {
+                        let elements = document.querySelectorAll('#mainBlock div');
+                        for (let elem of elements) {
+                            elem.remove();
+                        }
+                        warnings = 0;
+                        counter = 0;
+                        document.querySelector('#warnings span').innerHTML = warnings;
+                        document.querySelector('#counter span').innerHTML = counter;
+                        time = maxTime;
+                        timer();
+                    }
+                }
+            }
+        }
+    }
+
+    no() {
+        if (p) {
+            clearTimeout(timerID);
+            if (!p.correct) {
+                document.querySelector('#counter span').innerHTML = ++counter;
+                curDIV.remove();
+                if (counter < maxCounter) {
+                    time = maxTime;
+                    timer();
+                } else {
+                    alert('Вы выиграли');
+                    if (confirm('Сыграть ещё раз?')) {
+                        let elements = document.querySelectorAll('#mainBlock div');
+                        for (let elem of elements) {
+                            elem.remove();
+                        }
+                        warnings = 0;
+                        counter = 0;
+                        document.querySelector('#warnings span').innerHTML = warnings;
+                        document.querySelector('#counter span').innerHTML = counter;
+                        time = maxTime;
+                        timer();
+                    }
+                }
+            } else {
+                document.querySelector('#warnings span').innerHTML = ++warnings;
+                curDIV.style.background = red;
+                if (warnings < maxWarnings) {
+                    time = maxTime;
+                    timer();
+                } else {
+                    alert('Вы проиграли');
+                    if (confirm('Сыграть ещё раз?')) {
+                        let elements = document.querySelectorAll('#mainBlock div');
+                        for (let elem of elements) {
+                            elem.remove();
+                        }
+                        warnings = 0;
+                        counter = 0;
+                        document.querySelector('#warnings span').innerHTML = warnings;
+                        document.querySelector('#counter span').innerHTML = counter;
+                        time = maxTime;
+                        timer();
+                    }
+                }
+            }
+        }
+    }
+
+    onClick(event) {
+        let button = event.target.dataset.answer;
+        if (button) {
+            this[button]();
+        }
     }
 }
+
+new Buttons(document.getElementById('buttons'));
 
 function timer() {
-
-    let timer = document.querySelector('#timer span').innerHTML;
-    var end = false;
-
-    if (timer > 0) {
-        --timer;
-    } else {
-        end = true;
+    if (time == maxTime) {
+        p = new Person(Boolean(randomInt(2)));
+        let div = document.createElement('div');
+        div.innerHTML = p.getName() + '<br>' +
+            p.getCity() + '<br>' +
+            p.getCountry() + '<br>' +
+            p.getPurpose() + '<br>' +
+            p.getDate();
+        main.append(div);
+        main.scrollTop = main.scrollHeight;
+        curDIV = div;
     }
-    if (end) {
-        clearInterval(timerID);
-        alert("Таймер сработал!");
+    if (time >= 0) {
+        document.querySelector('#timer span').innerHTML = time;
+    }
+    if (time-- < 0) {
+        clearTimeout(timerID);
+        document.querySelector('#warnings span').innerHTML = ++warnings;
+        curDIV.style.background = red;
+        if (warnings < maxWarnings) {
+            time = maxTime;
+            timer();
+        } else {
+            alert('Вы проиграли');
+            if (confirm('Сыграть ещё раз?')) {
+                let elements = document.querySelectorAll('#mainBlock div');
+                for (let elem of elements) {
+                    elem.remove();
+                }
+                warnings = 0;
+                counter = 0;
+                document.querySelector('#warnings span').innerHTML = warnings;
+                document.querySelector('#counter span').innerHTML = counter;
+                time = maxTime;
+                timer();
+            }
+        }
     } else {
-        document.querySelector('#timer span').innerHTML = timer;
+        timerID = setTimeout(timer, 1000);
     }
 }
-window.timerID = setInterval(timer, 1000);
+
+timer();
